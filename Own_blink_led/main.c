@@ -1,0 +1,30 @@
+//#include "driver/gpio.h"
+#include "esp_system.h"
+#include "sdkconfig.h"
+#include "esp_delay.h"  // Jeśli dostępne, dla opóźnień
+
+#define BLINK_GPIO 2  // Podłącz diodę do GPIO2
+
+void delay_ms(int ms)
+{
+    // Prosty "busy-wait" delay – można zastąpić bardziej precyzyjnym
+    for (int i = 0; i < ms * 1000; i++) {
+        asm volatile("nop");
+    }
+}
+
+void app_main(void)
+{
+    // Ustaw GPIO2 jako wyjście
+    gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
+
+    while (1) {
+        // Włącz diodę
+        gpio_set_level(BLINK_GPIO, 1);
+        delay_ms(500);
+
+        // Wyłącz diodę
+        gpio_set_level(BLINK_GPIO, 0);
+        delay_ms(500);
+    }
+}

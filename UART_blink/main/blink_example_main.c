@@ -1,0 +1,67 @@
+#include "driver/gpio.h"
+#include "driver/uart.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/projdefs.h"
+#include "freertos/queue.h"
+#include "freertos/task.h"
+#include "hal/gpio_types.h"
+#include "hal/uart_types.h"
+#include "portmacro.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
+#define UART_PORT UART_NUM_0
+#define LED_GPIO 2
+#define BUF_SIZE 1024
+
+QueueHandle_t uartQueue; // kolejka
+
+// odbieranie danych UART z terminala
+void uart_rx(void *arg) {
+  uint8_t data[BUF_SIZE];
+  while (1) {
+    int len = uart_read_bytes(UART_PORT, data, BUF_SIZE, pdMS_TO_TICKS(100));
+    if (len > 0) {
+      for (int i = 0; i < len; i++) {
+        xQueueSend(uartQueue, &data[i], portMAX_DELAY);
+      }
+    }
+  }
+}
+
+void led_ctrl(void *arg) {
+  uint8_t rx_char;
+  while (1) {
+    if (xQueueReceive(uartQueue, &rx_char, portMAX_DELAY)) {
+      if (rx_char == 'A') {
+        gpio_set_level(LED_GPIO, 1);
+      } else if (rx_char == 'B') {
+        gpio_set_level(LED_GPIO, 0);
+      } else
+        printf("Char: %c\n", rx_char);
+    }
+  }
+}
+
+void app_main() {
+  gpio_reset_pin(LED_GPIO);
+  gpio_set_direction(LED_GPIO, GPIO_MODE_OUTPUT);
+
+  uart_config_t uart_config = {.baud_rate = 115200,
+                               .data_bits = UART_DATA_8_BITS,
+                               .parity = UART_PARITY_DISABLE,
+                               .stop_bits = UART_STOP_BITS_1,
+                               .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
+
+  uart_param_config(UART_PORT, &uart_config);
+  uart_driver_install(UART_PORT, BUF_SIZE * 2, BUF_SIZE * 2, BUF_SIZE * 2, NULL,
+                      0);
+
+  uartQueue = xQueueCreate(10, sizeof(uint8_t)); // tworzymy kolejke
+
+  xTaskCreate(uart_rx, "uart_rx_task", 2048, NULL, 10, NULL);
+  xTaskCreate(led_ctrl, "led_ctrl_task", 2024, NULL, 10, NULL);
+
+  printf("Wpisz A - zapal LED \n Wpisz B -> zgas LED\n");
+}

@@ -1,0 +1,68 @@
+
+#include <stdint.h>
+#include <stdio.h>
+#include <sys/_intsup.h>
+#include "esp_attr.h"
+#include "esp_rom_gpio.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/idf_additions.h"
+#include "freertos/task.h"
+#include "driver/gpio.h"
+#include "esp_log.h"
+#include "hal/gpio_types.h"
+#include "led_strip.h"
+#include "sdkconfig.h"
+
+#define BLINK_GPIO 2
+#define BUTTON_GPIO 4
+
+TaskHandle_t BlinkyTaskHandle = NULL;
+
+bool led_state = false;
+void Blinky_Task(void * arg)
+{
+	while(1)
+	{
+		gpio_set_level(BLINK_GPIO, led_state);
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+	}
+}
+
+static void IRAM_ATTR gpio_isr_handler(void* arg)
+{
+	static uint32_t last_time = 0;
+    uint32_t current_time = xTaskGetTickCountFromISR();
+    if (current_time - last_time > 200 / portTICK_PERIOD_MS) {
+        led_state = !led_state;
+        last_time = current_time;
+    }
+}
+
+void app_main()
+{
+	esp_rom_gpio_pad_select_gpio(BLINK_GPIO);
+	gpio_set_direction(BLINK_GPIO, GPIO_MODE_OUTPUT);
+	
+	esp_rom_gpio_pad_select_gpio(BUTTON_GPIO);
+	gpio_set_direction(BUTTON_GPIO, GPIO_MODE_INPUT);
+	
+	gpio_pulldown_en(BUTTON_GPIO);
+	
+	gpio_pulldown_dis(BUTTON_GPIO);
+	
+	// Raising edge signal will trigger interrupt
+	gpio_set_intr_type(BUTTON_GPIO, GPIO_INTR_NEGEDGE);
+	
+	//install gpio isr service to defaylt values
+	gpio_install_isr_service(0);
+	// Attach the isr to the gpio interrpupt
+	gpio_isr_handler_add(BUTTON_GPIO, gpio_isr_handler, NULL);
+	
+	//Enable interrupt 
+	gpio_intr_enable(BUTTON_GPIO);
+	
+	xTaskCreatePinnedToCore(Blinky_Task, "Blinky", 4096, NULL , 10, &BlinkyTaskHandle, 0);
+	
+	
+}
+

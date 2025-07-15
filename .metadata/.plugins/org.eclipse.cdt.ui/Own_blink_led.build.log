@@ -1,0 +1,10 @@
+14:42:41 **** Incremental Build of configuration Debug for project Own_blink_led ****
+Info: Internal Builder is used for build
+gcc -O0 -g3 -Wall -c -fmessage-length=0 -o main.o "..\\main.c" 
+..\main.c:2:10: fatal error: esp_system.h: No such file or directory
+    2 | #include "esp_system.h"
+      |          ^~~~~~~~~~~~~~
+compilation terminated.
+
+14:42:41 Build Failed. 1 errors, 0 warnings. (took 233ms)
+

@@ -1,0 +1,38 @@
+#include <stdio.h>
+#include <stdbool.h>
+#include "freertos/FreeRTOS.h"
+#include "freertos/projdefs.h"
+#include "freertos/task.h"
+#include "freertos/timers.h"
+#include "driver/gpio.h"
+
+#define LED_PIN 2
+
+TimerHandle_t blink_timer;
+
+bool led_state = false;
+
+void timer_callback(TimerHandle_t xTime)
+{
+	led_state = !led_state;
+	gpio_set_level(LED_PIN,led_state);
+}
+
+void app_main()
+{
+	gpio_reset_pin(LED_PIN);
+	gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
+	gpio_set_level(LED_PIN, led_state);
+	
+	blink_timer = xTimerCreate("BlinkTimer",
+								pdMS_TO_TICKS(500),
+								pdTRUE, 
+								(void*)0, // ID
+								timer_callback); // callback
+						
+	if(blink_timer != NULL)	
+	{
+		xTimerStart(blink_timer,0);
+	}
+	
+}
