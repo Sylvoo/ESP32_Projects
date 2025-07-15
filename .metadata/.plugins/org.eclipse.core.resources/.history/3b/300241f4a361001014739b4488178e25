@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <sys/_intsup.h>
 #include "esp_attr.h"
-#include "esp_rom_gpio.h" // funkcje GPIO z ROM (bardziej niskopoziomowe niż driver/gpio.h)
+#include "esp_rom_gpio.h" // unkcje GPIO z ROM (bardziej niskopoziomowe niż driver/gpio.h)
 #include "freertos/FreeRTOS.h"
 #include "freertos/idf_additions.h"
 #include "freertos/task.h"
