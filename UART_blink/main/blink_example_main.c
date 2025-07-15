@@ -55,7 +55,7 @@ void app_main() {
                                .flow_ctrl = UART_HW_FLOWCTRL_DISABLE};
 
   uart_param_config(UART_PORT, &uart_config);
-  uart_driver_install(UART_PORT, BUF_SIZE * 2, BUF_SIZE * 2, BUF_SIZE * 2, NULL,
+  uart_driver_install(UART_PORT, BUF_SIZE * 2, BUF_SIZE * 2, BUF_SIZE * 2, &uartQueue,
                       0);
 
   uartQueue = xQueueCreate(10, sizeof(uint8_t)); // tworzymy kolejke

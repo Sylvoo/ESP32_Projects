@@ -1,7 +1,7 @@
 {
     "version":            "1.1",
     "project_name":       "blink",
-    "project_version":    "1",
+    "project_version":    "ebdb865-dirty",
     "project_path":       "C:/Users/21syl/workspace/UART_blink",
     "idf_path":           "C:/Espressif/frameworks/esp-idf-v5.3.1",
     "build_dir":          "C:/Users/21syl/workspace/UART_blink/build",

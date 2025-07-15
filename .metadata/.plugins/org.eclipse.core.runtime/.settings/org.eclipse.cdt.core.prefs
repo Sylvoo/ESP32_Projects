@@ -29,6 +29,12 @@ config/Button_blink_ISR/com.espressif.idf.cmake.core.provider/default/cdt.toolCh
 config/Button_blink_ISR/com.espressif.idf.cmake.core.provider/default/cdt.toolChain.type=org.eclipse.cdt.build.gcc
 config/Own_blink_led/cdt.toolChain.id=gcc-xtensa-esp32s3-toolchain-esp32s3.cmake
 config/Own_blink_led/cdt.toolChain.type=org.eclipse.cdt.build.gcc
+config/Servo/cdt.launchMode=run
+config/Servo/cdt.toolChain.id=gcc-xtensa-esp32-toolchain-esp32.cmake
+config/Servo/cdt.toolChain.type=org.eclipse.cdt.build.gcc
+config/Servo/com.espressif.idf.cmake.core.provider/default/cdt.launchMode=debug
+config/Servo/com.espressif.idf.cmake.core.provider/default/cdt.toolChain.id=gcc-xtensa-esp32-toolchain-esp32.cmake
+config/Servo/com.espressif.idf.cmake.core.provider/default/cdt.toolChain.type=org.eclipse.cdt.build.gcc
 config/Timer_blink_FRTOS/cdt.launchMode=run
 config/Timer_blink_FRTOS/cdt.toolChain.id=gcc-xtensa-esp32-toolchain-esp32.cmake
 config/Timer_blink_FRTOS/cdt.toolChain.type=org.eclipse.cdt.build.gcc
